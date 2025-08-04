@@ -14,7 +14,7 @@ and
 which are available in GLSL v3.30
 ([released in 2010](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.3.30.pdf))
 and later. Some ISF hosts (like
-[Videosync](https://videosync.showsync.com/download)) use GLSL v1.5 or earlier,
+[Videosync](https://videosync.showsync.com/download)) use GLSL v1.50 or earlier,
 and so they cannot run this shader. Modern versions of
 [Cycling ’74 Max](https://cycling74.com/products/max) (probably
 [v8.5 and later](https://docs.cycling74.com/userguide/jitter/graphics_engine/))
