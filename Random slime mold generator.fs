@@ -46,16 +46,6 @@
 // ShaderToy Common
 //
 
-#define T(p) texelFetch(iChannel0, ivec2(mod(p,R)), 0)
-#define T_B(p) texelFetch(bufferA, ivec2(mod(p,R)), 0)
-#define P(p) texture(iChannel0, mod(p,R)/R)
-#define C(p) texture(iChannel1, mod(p,R)/R)
-
-// #define T(p) IMG_PIXEL(iChannel0, ivec2(mod(p,R)))
-// #define T_B(p) IMG_PIXEL(bufferA, ivec2(mod(p,R)))
-// #define P(p) IMG_NORM_PIXEL(iChannel0, mod(p,R)/R)
-// #define C(p) IMG_NORM_PIXEL(iChannel1, mod(p,R)/R)
-
 #define PI 3.14159265
 #define dt 1.
 #define R iResolution.xy
@@ -137,8 +127,7 @@ void main()
         range(i, -2, 2) range(j, -2, 2)
         {
             vec2 tpos = pos + vec2(i,j);
-#define iChannel0 bufferB
-            vec4 data = T(tpos);
+            vec4 data = texelFetch(bufferB, ivec2(mod(tpos, R)), 0);
 
             vec2 X0 = DECODE(data.x) + tpos;
         	vec2 V0 = DECODE(data.y);
@@ -187,7 +176,7 @@ void main()
         vec2 uv = pos/R;
         ivec2 p = ivec2(pos);
 
-        vec4 data = T_B(pos);
+        vec4 data = texelFetch(bufferA, ivec2(mod(pos, R)), 0);
         vec2 X = DECODE(data.x) + pos;
         vec2 V = DECODE(data.y);
         float M = data.z;
@@ -200,7 +189,7 @@ void main()
             range(i, -2, 2) range(j, -2, 2)
             {
                 vec2 tpos = pos + vec2(i,j);
-                vec4 data = T_B(tpos);
+                vec4 data = texelFetch(bufferA, ivec2(mod(tpos, R)), 0);
 
                 vec2 X0 = DECODE(data.x) + tpos;
                 vec2 V0 = DECODE(data.y);
@@ -221,8 +210,7 @@ void main()
             {
                 float cang = ang + float(i) * dang;
             	vec2 dir = (1. + sense_dis*pow(M, distance_scale))*Dir(cang);
-#define iChannel1 bufferC
-            	vec3 s0 = C(X + dir).xyz;
+            	vec3 s0 = texture(bufferC, mod(X + dir, R) / R).xyz;
        			float fs = pow(s0.z, force_scale);
             	slimeF +=  sense_oscil*Rot(oscil_scale*(s0.z - M))*s0.xy
                          + sense_force*Dir(ang + sign(float(i))*PI*0.5)*fs;
@@ -271,7 +259,7 @@ void main()
         range(i, -2, 2) range(j, -2, 2)
         {
             vec2 tpos = pos + vec2(i,j);
-            vec4 data = T(tpos);
+            vec4 data = texelFetch(bufferB, ivec2(mod(tpos, R)), 0);
 
             vec2 X0 = DECODE(data.x) + tpos;
             vec2 V0 = DECODE(data.y);
@@ -333,7 +321,7 @@ void main()
             }
             col = tanh(1.3*col*col);
         #else
-        	float r = P(pos.xy).z;
+        	float r = texture(bufferC, mod(pos.xy, R) / R).z;
 
         	col.xyz =  3.*sin(0.2*vec3(1,2,3)*r);
         #endif
