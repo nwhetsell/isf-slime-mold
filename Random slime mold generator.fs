@@ -152,7 +152,7 @@ void main()
 
             vec2 X0 = DECODE(data.x) + tpos;
         	vec2 V0 = DECODE(data.y);
-        	vec2 M0 = data.zw;
+        	float M0 = data.z;
 
             X0 += V0*dt; //integrate position
 
@@ -164,7 +164,7 @@ void main()
             vec2 size = max(aabbX.zw - aabbX.xy, 0.); //only positive
 
             //the deposited mass into this cell
-            float m = M0.x*size.x*size.y/(K*K);
+            float m = M0*size.x*size.y/(K*K);
 
             //add weighted by mass
             X += center*m;
