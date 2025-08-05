@@ -111,18 +111,21 @@ float hash11(float p)
 #define range(i,a,b) for(int i = a; i <= b; i++)
 
 //data packing
-#define PACK(X) ( uint(round(65534.0*clamp(0.5*X.x+0.5, 0., 1.))) + \
-           65535u*uint(round(65534.0*clamp(0.5*X.y+0.5, 0., 1.))) )
+#define PACK(X) ( uint(round(65534.0*X.x)) + \
+           65535u*uint(round(65534.0*X.y)) )
 
-#define UNPACK(X) (clamp(vec2(X%65535u, X/65535u)/65534.0, 0.,1.)*2.0 - 1.0)
+#define UNPACK(X) vec2(X%65535u, X/65535u)/65534.0
 
 #ifdef VIDEOSYNC
 uint floatBitsToUint(float x);
 float uintBitsToFloat(uint x);
 #endif
 
-#define DECODE(X) UNPACK(floatBitsToUint(X))
-#define ENCODE(X) uintBitsToFloat(PACK(X))
+#define POST_UNPACK(X) (clamp(X, 0., 1.) * 2. - 1.)
+#define DECODE(X) POST_UNPACK(UNPACK(floatBitsToUint(X)))
+
+#define PRE_PACK(X) clamp(0.5 * X + 0.5, 0., 1.)
+#define ENCODE(X) uintBitsToFloat(PACK(PRE_PACK(X)))
 
 
 #define pos gl_FragCoord.xy
