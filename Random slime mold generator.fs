@@ -11,11 +11,84 @@
             "TYPE": "event"
         },
         {
-            "NAME": "iMouse",
-            "TYPE": "point2D",
-            "DEFAULT": [0.5, 0.5],
-            "MIN": [0, 0],
-            "MAX": [1, 1]
+            "NAME": "dt",
+            "LABEL": "Simulation speed",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MAX": 10,
+            "MIN": 0
+        },
+        {
+            "NAME": "distribution_size",
+            "LABEL": "Trail size",
+            "TYPE": "float",
+            "DEFAULT": 1.2,
+            "MAX": 10,
+            "MIN": 0
+        },
+        {
+            "NAME": "acceleration",
+            "LABEL": "Particle acceleration",
+            "TYPE": "float",
+            "DEFAULT": 0.04,
+            "MAX": 1,
+            "MIN": 0
+        },
+        {
+            "NAME": "sense_ang",
+            "LABEL": "Sensor angle factor",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MAX": 2,
+            "MIN": 0
+        },
+        {
+            "NAME": "sense_dis",
+            "LABEL": "Sensor distance",
+            "TYPE": "float",
+            "DEFAULT": 4,
+            "MAX": 20,
+            "MIN": 0
+        },
+        {
+            "NAME": "distance_scale",
+            "LABEL": "Sensor distance scale",
+            "TYPE": "float",
+            "DEFAULT": 2,
+            "MAX": 1,
+            "MIN": 0
+        },
+        {
+            "NAME": "sense_oscil",
+            "LABEL": "Sensor turn speed",
+            "TYPE": "float",
+            "DEFAULT": 0.2,
+            "MAX": 1,
+            "MIN": 0
+        },
+        {
+            "NAME": "oscil_scale",
+            "LABEL": "Sensor turn speed scale",
+            "TYPE": "float",
+            "DEFAULT": 0.5,
+            "MAX": 1,
+            "MIN": 0
+        },
+        {
+            "NAME": "sense_force",
+            "LABEL": "Sensor strength",
+            "TYPE": "float",
+            "DEFAULT": -0.01,
+            "MAX": 1,
+            "MIN": -1
+        },
+        {
+            "NAME": "force_scale",
+            "LABEL": "Sensor force scale",
+            "TYPE": "float",
+            "DEFAULT": 1.5,
+            "MAX": 2,
+            "MIN": 0
         }
     ],
     "ISFVSN": "2",
@@ -52,7 +125,6 @@
 //
 
 #define PI 3.1415926535897932384626433832795
-#define dt 1.
 #define R iResolution.xy
 
 
@@ -88,20 +160,8 @@ float hash11(float p)
 #define rand_interval 250
 #define random_gen(a, b, seed) ((a) + ((b)-(a))*hash11(seed + float(iFrame/rand_interval)))
 
-
-#define distribution_size 1.2
-
 //mold stuff
 #define sense_num 6
-#define sense_ang random_gen(0.1, 1., 40.)
-#define sense_dis random_gen(4., 20., 10.)
-#define sense_oscil random_gen(0., 0.2, 20.)
-#define oscil_scale 0.5
-#define sense_force random_gen(-0.15, 0.05, 30.)
-#define distance_scale random_gen(0., 1.0, 70.)
-#define force_scale 1.5
-#define trailing 0.
-#define acceleration random_gen(0., 0.08, 50.)
 
 //SPH pressure
 #define Pressure(rho) 0.5*rho
