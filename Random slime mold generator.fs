@@ -175,15 +175,13 @@ void main()
         }
 
         //normalization
-        if(M != 0.)
-        {
+        if (M != 0.) {
             X /= M;
             V /= M;
         }
 
         //initial condition
-        if(iFrame < 1 || restart)
-        {
+        if (iFrame < 1 || restart) {
             X = pos;
             V = vec2(0.);
             M = 0.07*GS(-pos/R);
