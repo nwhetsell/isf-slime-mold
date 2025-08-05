@@ -7,16 +7,11 @@ is another excellent resource. This particular shader is converted from
 [this ShaderToy shader](https://www.shadertoy.com/view/ttsfWn) by
 [**@MichaelMoroz**](https://github.com/MichaelMoroz).
 
-This shader relies on data packing with
-[`floatBitsToUint`](https://registry.khronos.org/OpenGL-Refpages/gl4/html/floatBitsToInt.xhtml)
-and
-[`uintBitsToFloat`](https://registry.khronos.org/OpenGL-Refpages/gl4/html/intBitsToFloat.xhtml),
-which are available in GLSL v3.30
-([released in 2010](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.3.30.pdf))
-and later. Some ISF hosts (like
-[Videosync](https://videosync.showsync.com/download)) use GLSL v1.50 or earlier,
-and so they cannot run this shader. Modern versions of
-[Cycling ’74 Max](https://cycling74.com/products/max) (probably
-[v8.5 and later](https://docs.cycling74.com/userguide/jitter/graphics_engine/))
-use a version of GLSL that includes `floatBitsToUint` and `uintBitsToFloat`, so
-the jit.gl.isf object can render this shader.
+This is a multi-pass shader that is intended to be used with floating-point
+buffers. Not all ISF hosts support floating-point buffers.
+[Videosync](https://videosync.showsync.com/download) supports floating-point
+buffers in
+[v2.0.12](https://support.showsync.com/release-notes/videosync/2.0#2012)) and
+later, but https://editor.isf.video does not appear to support floating-point
+buffers. This shader will produce *very* different output if floating-point
+buffers are not used.
