@@ -149,19 +149,20 @@
 }
 */
 
-//
-// ShaderToy Common
-//
-
+// Constants from LYGIA <https://github.com/patriciogonzalezvivo/lygia>
 #define PI 3.1415926535897932384626433832795
 #define HALF_PI 1.5707963267948966192313216916398
 
 #define INV_SQRT_2 0.7071067811865475244008443621048
 
+//
+// ShaderToy Common
+//
+
 // Mold stuff
 #define HALF_SENSOR_COUNT_MINUS_1 6
 
-// Useful functions (from LYGIA: https://github.com/patriciogonzalezvivo/lygia)
+// Useful functions (from LYGIA <https://github.com/patriciogonzalezvivo/lygia>)
 vec2 polar2cart(in vec2 polar) {
     return vec2(cos(polar.x), sin(polar.x)) * polar.y;
 }
