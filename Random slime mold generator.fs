@@ -167,7 +167,15 @@
 #define Dir(ang) vec2(cos(ang), sin(ang))
 #define Rot(ang) mat2(cos(ang), sin(ang), -sin(ang), cos(ang))
 
-//data packing
+
+// The ShaderToy shader uses the functions `floatBitsToUint` and
+// `uintBitsToFloat` to pack more than 4 floats (5 in this case) into a
+// 4-component pixel. These functions are available in GLSL v3.30 (OpenGL v3.3)
+// and later, but some ISF hosts (notably Videosync) use GLSL v1.50
+// (OpenGL v3.2). We can work around this by effectively running one of the
+// ShaderToy buffers twice, but the packing operations in the ShaderToy shader
+// also perform a `clamp` on the packed data. Without the `clamp` calls, this
+// shader seems to blow up numerically.
 #define POST_UNPACK(X) (clamp(X, 0., 1.) * 2. - 1.)
 #define PRE_PACK(X) clamp(0.5 * X + 0.5, 0., 1.)
 
