@@ -146,8 +146,6 @@
 #define POST_UNPACK(X) (clamp(X, 0., 1.) * 2. - 1.)
 #define PRE_PACK(X) clamp(0.5 * X + 0.5, 0., 1.)
 
-
-#define pos gl_FragCoord.xy
 #define iFrame FRAMEINDEX
 #define iResolution RENDERSIZE
 #define U gl_FragColor
@@ -156,10 +154,10 @@
 
 void main()
 {
+    vec2 position = gl_FragCoord.xy;
+
     if (PASSINDEX == 0 || PASSINDEX == 1) // ShaderToy Buffer A
     {
-        ivec2 p = ivec2(pos);
-
         vec2 X = vec2(0);
         vec2 V = vec2(0);
         float M = 0.;
@@ -169,7 +167,7 @@ void main()
         //this makes the tracking conservative
         range(i, -2, 2) range(j, -2, 2)
         {
-            vec2 tpos = pos + vec2(i,j);
+            vec2 tpos = position + vec2(i,j);
             vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
@@ -182,7 +180,7 @@ void main()
             //particle distribution size
             float K = distribution_size;
 
-            vec4 aabbX = vec4(max(pos - 0.5, X0 - K*0.5), min(pos + 0.5, X0 + K*0.5)); //overlap aabb
+            vec4 aabbX = vec4(max(position - 0.5, X0 - K*0.5), min(position + 0.5, X0 + K*0.5)); //overlap aabb
             vec2 center = 0.5*(aabbX.xy + aabbX.zw); //center of mass
             vec2 size = max(aabbX.zw - aabbX.xy, 0.); //only positive
 
@@ -205,13 +203,13 @@ void main()
 
         //initial condition
         if (iFrame < 1 || restart) {
-            X = pos;
+            X = position;
             V = vec2(0.);
-            M = 0.07*GS(-pos/R);
+            M = 0.07*GS(-position/R);
         }
 
         if (PASSINDEX == 0) {
-            X = clamp(X - pos, vec2(-0.5), vec2(0.5));
+            X = clamp(X - position, vec2(-0.5), vec2(0.5));
             U = vec4(PRE_PACK(X), M, 1.);
         } else {
             U = vec4(PRE_PACK(V), 0., 1.);
@@ -219,12 +217,11 @@ void main()
     }
     else if (PASSINDEX == 2) // ShaderToy Buffer B
     {
-        vec2 uv = pos/R;
-        ivec2 p = ivec2(pos);
-        vec2 wrapped_pos = mod(pos, RENDERSIZE);
+        vec2 uv = position/R;
+        vec2 wrapped_pos = mod(position, RENDERSIZE);
 
         vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_pos);
-        vec2 X = POST_UNPACK(data.xy) + pos;
+        vec2 X = POST_UNPACK(data.xy) + position;
         vec2 V = POST_UNPACK(IMG_PIXEL(bufferA_velocity, wrapped_pos).xy);
         float M = data.z;
 
@@ -235,7 +232,7 @@ void main()
             vec3 avgV = vec3(0.);
             range(i, -2, 2) range(j, -2, 2)
             {
-                vec2 tpos = pos + vec2(i,j);
+                vec2 tpos = position + vec2(i,j);
                 vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
                 vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
@@ -271,7 +268,7 @@ void main()
 
             // if(iMouse.z > 0.)
             // {
-            //     vec2 dx= pos - iMouse.xy;
+            //     vec2 dx= position - iMouse.xy;
             //      F += 0.6*dx*GS(dx/20.);
             // }
 
@@ -291,9 +288,9 @@ void main()
 
         //input
         //if(iMouse.z > 0.)
-        //\\	M = mix(M, 0.5, GS((pos - iMouse.xy)/13.));
+        //\\	M = mix(M, 0.5, GS((position - iMouse.xy)/13.));
         //else
-         //   M = mix(M, 0.5, GS((pos - R*0.5)/13.));
+         //   M = mix(M, 0.5, GS((position - R*0.5)/13.));
 
         //save
         U = vec4(PRE_PACK(V), 0., 1.);
@@ -306,14 +303,14 @@ void main()
         //compute the smoothed density and velocity
         range(i, -2, 2) range(j, -2, 2)
         {
-            vec2 tpos = pos + vec2(i,j);
+            vec2 tpos = position + vec2(i,j);
             vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
             vec2 X0 = POST_UNPACK(data.xy) + tpos;
             vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferB, wrapped_tpos).xy);
             float M0 = data.z;
-            vec2 dx = X0 - pos;
+            vec2 dx = X0 - position;
 
             #define radius 1.
             float K = GS(dx/radius)/(radius*radius);
@@ -329,7 +326,7 @@ void main()
     {
         #ifdef heightmap
             // Normalized pixel coordinates
-            pos = (pos - R*0.5)/max(R.x,R.y);
+            position = (position - R*0.5)/max(R.x,R.y);
 
             vec2 uv = iMouse.xy/R;
             vec2 angles = vec2(0.5, -0.5)*PI;
@@ -341,7 +338,7 @@ void main()
             //tracking particle
             vec4 fp = vec4(R*0.5 + 0.*vec2(150.*iTime, 0.), 0., 0.);
 
-            vec3 ray = normalize(camera_z + FOV*(pos.x*camera_x + pos.y*camera_y));
+            vec3 ray = normalize(camera_z + FOV*(position.x*camera_x + position.y*camera_y));
             vec3 cam_pos = vec3(fp.xy-R*0.5, 0.) - RAD*vec3(cos(angles.x)*cos(angles.y),sin(angles.x)*cos(angles.y),sin(angles.y));
 
             vec4 X = ray_march(cam_pos, ray);
@@ -370,7 +367,7 @@ void main()
             }
             col = tanh(1.3*col*col);
         #else
-            vec2 wrapped_pos = mod(pos.xy, R);
+            vec2 wrapped_pos = mod(position, R);
         	float r = IMG_NORM_PIXEL(bufferC, wrapped_pos / R).z;
 
         	col.xyz =  3.*sin(0.2*vec3(1,2,3)*r);
