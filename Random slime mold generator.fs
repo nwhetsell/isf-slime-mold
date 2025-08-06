@@ -144,7 +144,6 @@
 
 //SPH pressure
 #define Pressure(rho) 0.5*rho
-#define fluid_rho 0.2
 
 //useful functions
 #define GS(x) exp(-dot(x,x))
