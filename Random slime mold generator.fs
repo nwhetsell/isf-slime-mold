@@ -297,7 +297,7 @@ void main()
                 vec2 sensedPosition = mod(X + dir, RENDERSIZE);
             	vec4 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE);
        			float fs = pow(s0.z, force_scale);
-            	slimeF += sense_oscil * rotate2d(oscil_scale*(s0.z - M)) * s0.xy +
+            	slimeF += sense_oscil * rotate2d(oscil_scale * (s0.z - M)) * s0.xy +
                           sense_force * polar2cart(vec2(ang + sign(float(i)) * HALF_PI, 1)) * fs;
             }
 
@@ -318,7 +318,9 @@ void main()
 
             // Velocity limit
             float v = length(V);
-            V /= (v > 1.) ? v : 1.;
+            if (v > 1.) {
+                V /= v;
+            }
         }
 
         // // Input
@@ -361,7 +363,6 @@ void main()
         vec2 wrappedPosition = mod(position, RENDERSIZE);
        	float rho = IMG_NORM_PIXEL(bufferC, wrappedPosition / RENDERSIZE).z;
 
-       	gl_FragColor.rgb = 3. * sin(rho * 0.2 * vec3(1, 2, 3));
-        gl_FragColor.a = 1.;
+       	gl_FragColor = vec4(3. * sin(rho * 0.2 * vec3(1, 2, 3)), 1);
     }
 }
