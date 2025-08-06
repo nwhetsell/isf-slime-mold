@@ -253,7 +253,9 @@ void main()
             V /= M;
         }
 
-        M += inputImageAmount * luminance(IMG_PIXEL(inputImage, position));
+        float inputLuminance = luminance(IMG_PIXEL(inputImage, position));
+        M += inputImageAmount * inputLuminance;
+        V += inputImageAmount * inputLuminance;
 
         // Mass decay
         M *= massDecayFactor;
