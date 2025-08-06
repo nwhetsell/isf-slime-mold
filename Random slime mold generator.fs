@@ -258,7 +258,7 @@ void main()
                 float cang = ang + float(i) * dang;
             	vec2 dir = (1. + sense_dis * pow(M, distance_scale)) * Dir(cang);
                 vec2 sensedPosition = mod(X + dir, RENDERSIZE);
-            	vec3 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE).xyz;
+            	vec4 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE);
        			float fs = pow(s0.z, force_scale);
             	slimeF += sense_oscil * Rot(oscil_scale*(s0.z - M)) * s0.xy +
                           sense_force * Dir(ang + sign(float(i)) * 0.5 * PI) * fs;
