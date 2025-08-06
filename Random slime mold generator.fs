@@ -268,10 +268,9 @@ void main()
             slimeF -= dot(slimeF, normalize(V)) * normalize(V);
             F += slimeF / float(2 * sense_num);
 
-            // if(iMouse.z > 0.)
-            // {
-            //     vec2 dx= position - iMouse.xy;
-            //      F += 0.6*dx*GS(dx/20.);
+            // if (iMouse.z > 0.) {
+            //     vec2 dx = position - iMouse.xy;
+            //     F += 0.6 *dx * GS(dx / 20.);
             // }
 
             // Integrate velocity
@@ -280,9 +279,9 @@ void main()
             // Acceleration for fun effects
             V *= 1. + acceleration;
 
-            //velocity limit
+            // Velocity limit
             float v = length(V);
-            V /= (v > 1.)?1.*v:1.;
+            V /= (v > 1.) ? v : 1.;
         }
 
         // // Mass decay
@@ -302,7 +301,7 @@ void main()
         float rho = 0.001;
         vec2 vel = vec2(0);
 
-        //compute the smoothed density and velocity
+        // Compute the smoothed density and velocity
         for (int i = -2; i <= 2; i++)
         for (int j = -2; j <= 2; j++) {
             vec2 translatedPosition = position + vec2(i, j);
