@@ -172,11 +172,11 @@ void main()
         //this makes the tracking conservative
         for (int i = -2; i <= 2; i++)
         for (int j = -2; j <= 2; j++) {
-            vec2 tpos = position + vec2(i,j);
-            vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
+            vec2 translatedPosition = position + vec2(i, j);
+            vec2 wrapped_tpos = mod(translatedPosition, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
-            vec2 X0 = POST_UNPACK(data.xy) + tpos;
+            vec2 X0 = POST_UNPACK(data.xy) + translatedPosition;
         	vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferB, wrapped_tpos).xy);
         	float M0 = data.z;
 
@@ -237,11 +237,11 @@ void main()
 
             for (int i = -2; i <= 2; i++)
             for (int j = -2; j <= 2; j++) {
-                vec2 tpos = position + vec2(i,j);
-                vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
+                vec2 translatedPosition = position + vec2(i, j);
+                vec2 wrapped_tpos = mod(translatedPosition, RENDERSIZE);
                 vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
-                vec2 X0 = POST_UNPACK(data.xy) + tpos;
+                vec2 X0 = POST_UNPACK(data.xy) + translatedPosition;
                 vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferA_velocity, wrapped_tpos).xy);
                 float M0 = data.z;
                 vec2 dx = X0 - X;
@@ -307,11 +307,11 @@ void main()
         //compute the smoothed density and velocity
         for (int i = -2; i <= 2; i++)
         for (int j = -2; j <= 2; j++) {
-            vec2 tpos = position + vec2(i,j);
-            vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
+            vec2 translatedPosition = position + vec2(i, j);
+            vec2 wrapped_tpos = mod(translatedPosition, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
 
-            vec2 X0 = POST_UNPACK(data.xy) + tpos;
+            vec2 X0 = POST_UNPACK(data.xy) + translatedPosition;
             vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferB, wrapped_tpos).xy);
             float M0 = data.z;
             vec2 dx = X0 - position;
