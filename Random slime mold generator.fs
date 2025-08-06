@@ -1,10 +1,23 @@
 /*{
     "CATEGORIES": [
+        "Filter",
         "Generator"
     ],
     "CREDIT": "Mykhailo Moroz <https://www.shadertoy.com/user/michael0884>",
     "DESCRIPTION": "Random slime mold generator, converted from <https://www.shadertoy.com/view/ttsfWn>",
     "INPUTS": [
+        {
+            "NAME" : "inputImage",
+            "TYPE" : "image"
+        },
+        {
+            "NAME": "inputImageAmount",
+            "LABEL": "Input image amount",
+            "TYPE": "float",
+            "DEFAULT": 0,
+            "MIN": 0,
+            "MAX": 1
+        },
         {
             "NAME": "restart",
             "LABEL": "Restart",
@@ -125,7 +138,6 @@
 //
 
 #define PI 3.1415926535897932384626433832795
-#define R iResolution.xy
 
 //mold stuff
 #define sense_num 6
@@ -147,7 +159,6 @@
 #define PRE_PACK(X) clamp(0.5 * X + 0.5, 0., 1.)
 
 #define iFrame FRAMEINDEX
-#define iResolution RENDERSIZE
 #define U gl_FragColor
 #define fragColor gl_FragColor
 #define col gl_FragColor
@@ -205,7 +216,7 @@ void main()
         if (iFrame < 1 || restart) {
             X = position;
             V = vec2(0.);
-            M = 0.07*GS(-position/R);
+            M = 0.07*GS(-position/RENDERSIZE);
         }
 
         if (PASSINDEX == 0) {
@@ -217,7 +228,7 @@ void main()
     }
     else if (PASSINDEX == 2) // ShaderToy Buffer B
     {
-        vec2 uv = position/R;
+        vec2 uv = position/RENDERSIZE;
         vec2 wrapped_pos = mod(position, RENDERSIZE);
 
         vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_pos);
@@ -255,8 +266,8 @@ void main()
             {
                 float cang = ang + float(i) * dang;
             	vec2 dir = (1. + sense_dis*pow(M, distance_scale))*Dir(cang);
-                vec2 sensedPosition = mod(X + dir, R);
-            	vec3 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / R).xyz;
+                vec2 sensedPosition = mod(X + dir, RENDERSIZE);
+            	vec3 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE).xyz;
        			float fs = pow(s0.z, force_scale);
             	slimeF +=  sense_oscil*Rot(oscil_scale*(s0.z - M))*s0.xy
                          + sense_force*Dir(ang + sign(float(i))*PI*0.5)*fs;
@@ -290,7 +301,7 @@ void main()
         //if(iMouse.z > 0.)
         //\\	M = mix(M, 0.5, GS((position - iMouse.xy)/13.));
         //else
-         //   M = mix(M, 0.5, GS((position - R*0.5)/13.));
+         //   M = mix(M, 0.5, GS((position - RENDERSIZE*0.5)/13.));
 
         //save
         U = vec4(PRE_PACK(V), 0., 1.);
@@ -326,9 +337,9 @@ void main()
     {
         #ifdef heightmap
             // Normalized pixel coordinates
-            position = (position - R*0.5)/max(R.x,R.y);
+            position = (position - RENDERSIZE*0.5)/max(RENDERSIZE.x,RENDERSIZE.y);
 
-            vec2 uv = iMouse.xy/R;
+            vec2 uv = iMouse.xy/RENDERSIZE;
             vec2 angles = vec2(0.5, -0.5)*PI;
 
             vec3 camera_z = vec3(cos(angles.x)*cos(angles.y),sin(angles.x)*cos(angles.y),sin(angles.y));
@@ -336,10 +347,10 @@ void main()
             vec3 camera_y = -normalize(cross(camera_x,camera_z));
 
             //tracking particle
-            vec4 fp = vec4(R*0.5 + 0.*vec2(150.*iTime, 0.), 0., 0.);
+            vec4 fp = vec4(RENDERSIZE*0.5 + 0.*vec2(150.*iTime, 0.), 0., 0.);
 
             vec3 ray = normalize(camera_z + FOV*(position.x*camera_x + position.y*camera_y));
-            vec3 cam_pos = vec3(fp.xy-R*0.5, 0.) - RAD*vec3(cos(angles.x)*cos(angles.y),sin(angles.x)*cos(angles.y),sin(angles.y));
+            vec3 cam_pos = vec3(fp.xy-RENDERSIZE*0.5, 0.) - RAD*vec3(cos(angles.x)*cos(angles.y),sin(angles.x)*cos(angles.y),sin(angles.y));
 
             vec4 X = ray_march(cam_pos, ray);
 
@@ -367,8 +378,8 @@ void main()
             }
             col = tanh(1.3*col*col);
         #else
-            vec2 wrapped_pos = mod(position, R);
-        	float r = IMG_NORM_PIXEL(bufferC, wrapped_pos / R).z;
+            vec2 wrapped_pos = mod(position, RENDERSIZE);
+        	float r = IMG_NORM_PIXEL(bufferC, wrapped_pos / RENDERSIZE).z;
 
         	col.xyz =  3.*sin(0.2*vec3(1,2,3)*r);
         #endif
