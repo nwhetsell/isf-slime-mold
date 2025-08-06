@@ -102,6 +102,22 @@
             "DEFAULT": 1.5,
             "MAX": 2,
             "MIN": 0
+        },
+        {
+            "NAME": "massDecayFactor",
+            "LABEL": "Mass decay",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MAX": 2,
+            "MIN": 0
+        },
+        {
+            "NAME": "radius",
+            "LABEL": "Smoothing radius",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MAX": 10,
+            "MIN": 0
         }
     ],
     "ISFVSN": "2",
@@ -212,6 +228,9 @@ void main()
             M = 0.07 * GS(-position / RENDERSIZE);
         }
 
+        // Mass decay
+        M *= massDecayFactor;
+
         if (PASSINDEX == 0) {
             X = clamp(X - position, vec2(-0.5), vec2(0.5));
             gl_FragColor = vec4(PRE_PACK(X), M, 1);
@@ -284,9 +303,6 @@ void main()
             V /= (v > 1.) ? v : 1.;
         }
 
-        // // Mass decay
-        // M *= 0.999;
-
         // // Input
         // if (iMouse.z > 0.) {
         //     M = mix(M, 0.5, GS((position - iMouse.xy) / 13.));
@@ -313,7 +329,6 @@ void main()
             float M0 = data.z;
             vec2 dx = X0 - position;
 
-            #define radius 1.
             float K = GS(dx / radius ) / (radius * radius);
             rho += M0 * K;
             vel += M0 * K * V0;
