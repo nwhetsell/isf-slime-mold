@@ -24,6 +24,19 @@
             "TYPE": "event"
         },
         {
+            "NAME": "enableMouse",
+            "LABEL": "Enable mouse",
+            "TYPE": "bool",
+            "DEFAULT": false
+        },
+        {
+            "NAME": "mouse",
+            "TYPE": "point2D",
+            "DEFAULT": [0.5, 0.5],
+            "MIN": [0, 0],
+            "MAX": [1, 1]
+        },
+        {
             "NAME": "dt",
             "LABEL": "Simulation speed",
             "TYPE": "float",
@@ -245,6 +258,11 @@ void main()
         // Mass decay
         M *= massDecayFactor;
 
+        // Input
+        if (enableMouse) {
+            M = mix(M, 0.5, gaussian((position - mouse * RENDERSIZE) / 13., INV_SQRT_2));
+        }
+
         // Initial condition
         if (FRAMEINDEX < 1 || restart) {
             X = position;
@@ -309,10 +327,10 @@ void main()
             slimeF -= dot(slimeF, normalize(V)) * normalize(V);
             F += slimeF / float(2 * HALF_SENSOR_COUNT_MINUS_1);
 
-            // if (iMouse.z > 0.) {
-            //     vec2 dx = position - iMouse.xy;
-            //     F += 0.6 *dx * GS(dx / 20.);
-            // }
+            if (enableMouse) {
+                vec2 dx = position - mouse * RENDERSIZE;
+                F += 0.6 * dx * gaussian(dx / 20., INV_SQRT_2);
+            }
 
             // Integrate velocity
             V += F * dt / M;
@@ -326,13 +344,6 @@ void main()
                 V /= v;
             }
         }
-
-        // // Input
-        // if (iMouse.z > 0.) {
-        //     M = mix(M, 0.5, GS((position - iMouse.xy) / 13.));
-        // } else {
-        //     M = mix(M, 0.5, GS((position - 0.5 * RENDERSIZE) / 13.));
-        // }
 
         gl_FragColor = vec4(PRE_PACK(V), 0, 1);
     }
