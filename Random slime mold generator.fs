@@ -154,19 +154,25 @@
 //
 
 #define PI 3.1415926535897932384626433832795
+#define HALF_PI 1.5707963267948966192313216916398
 
-//mold stuff
-#define sense_num 6
+#define INV_SQRT_2 0.7071067811865475244008443621048
 
-//SPH pressure
-#define Pressure(rho) 0.5*rho
+// Mold stuff
+#define HALF_SENSOR_COUNT_MINUS_1 6
 
-//useful functions
-#define GS(x) exp(-dot(x,x))
-#define GS0(x) exp(-length(x))
-#define Dir(ang) vec2(cos(ang), sin(ang))
-#define Rot(ang) mat2(cos(ang), sin(ang), -sin(ang), cos(ang))
+// Useful functions (from LYGIA: https://github.com/patriciogonzalezvivo/lygia)
+vec2 polar2cart(in vec2 polar) {
+    return vec2(cos(polar.x), sin(polar.x)) * polar.y;
+}
 
+mat2 rotate2d(const in float r) {
+    float c = cos(r);
+    float s = sin(r);
+    return mat2(c, s, -s, c);
+}
+
+float gaussian( vec2 d, float s) { return exp(-( d.x*d.x + d.y*d.y) / (2.0 * s*s)); }
 
 // The ShaderToy shader uses the functions `floatBitsToUint` and
 // `uintBitsToFloat` to pack more than 4 floats (5 in this case) into a
@@ -229,15 +235,17 @@ void main()
             V /= M;
         }
 
+        M += inputImageAmount * IMG_PIXEL(inputImage, position).x;
+
+        // Mass decay
+        M *= massDecayFactor;
+
         // Initial condition
         if (FRAMEINDEX < 1 || restart) {
             X = position;
             V = vec2(0);
-            M = 0.07 * GS(-position / RENDERSIZE);
+            M = 0.07 * gaussian(-position / RENDERSIZE, INV_SQRT_2);
         }
-
-        // Mass decay
-        M *= massDecayFactor;
 
         if (PASSINDEX == 0) {
             X = clamp(X - position, vec2(-0.5), vec2(0.5));
@@ -271,29 +279,30 @@ void main()
                 float M0 = data.z;
                 vec2 dx = X0 - X;
 
-                float avgP = 0.5 * M0 * (Pressure(M) + Pressure(M0));
-                F -= 0.5 * GS(dx) * avgP * dx;
-                avgV += M0 * GS(dx) * vec3(V0, 1);
+                float avgP = 0.5 * M0 * (0.5 * (M + M0));
+                float positionChangeDistribution = gaussian(dx, INV_SQRT_2);
+                F -= 0.5 * positionChangeDistribution * avgP * dx;
+                avgV += M0 * positionChangeDistribution * vec3(V0, 1);
             }
             avgV.xy /= avgV.z;
 
             float ang = atan(V.y, V.x);
-            float dang = sense_ang * PI / float(sense_num);
+            float dang = sense_ang * PI / float(HALF_SENSOR_COUNT_MINUS_1);
             vec2 slimeF = vec2(0);
             // Slime mold sensors
-            for (int i = -sense_num; i <= sense_num; i++) {
+            for (int i = -HALF_SENSOR_COUNT_MINUS_1; i <= HALF_SENSOR_COUNT_MINUS_1; i++) {
                 float cang = ang + float(i) * dang;
-            	vec2 dir = (1. + sense_dis * pow(M, distance_scale)) * Dir(cang);
+            	vec2 dir = (1. + sense_dis * pow(M, distance_scale)) * polar2cart(vec2(cang, 1));
                 vec2 sensedPosition = mod(X + dir, RENDERSIZE);
             	vec4 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE);
        			float fs = pow(s0.z, force_scale);
-            	slimeF += sense_oscil * Rot(oscil_scale*(s0.z - M)) * s0.xy +
-                          sense_force * Dir(ang + sign(float(i)) * 0.5 * PI) * fs;
+            	slimeF += sense_oscil * rotate2d(oscil_scale*(s0.z - M)) * s0.xy +
+                          sense_force * polar2cart(vec2(ang + sign(float(i)) * HALF_PI, 1)) * fs;
             }
 
             // Remove acceleration component and leave rotation
             slimeF -= dot(slimeF, normalize(V)) * normalize(V);
-            F += slimeF / float(2 * sense_num);
+            F += slimeF / float(2 * HALF_SENSOR_COUNT_MINUS_1);
 
             // if (iMouse.z > 0.) {
             //     vec2 dx = position - iMouse.xy;
@@ -337,7 +346,7 @@ void main()
             float M0 = data.z;
             vec2 dx = X0 - position;
 
-            float K = GS(dx / radius ) / (radius * radius);
+            float K = gaussian(dx / radius, radius * INV_SQRT_2);
             rho += M0 * K;
             vel += M0 * K * V0;
         }
