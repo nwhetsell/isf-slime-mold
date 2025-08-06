@@ -151,8 +151,6 @@
 #define GS0(x) exp(-length(x))
 #define Dir(ang) vec2(cos(ang), sin(ang))
 #define Rot(ang) mat2(cos(ang), sin(ang), -sin(ang), cos(ang))
-#define loop(i,x) for(int i = 0; i < x; i++)
-#define range(i,a,b) for(int i = a; i <= b; i++)
 
 //data packing
 #define POST_UNPACK(X) (clamp(X, 0., 1.) * 2. - 1.)
@@ -172,8 +170,8 @@ void main()
         //basically integral over all updated neighbor distributions
         //that fall inside of this pixel
         //this makes the tracking conservative
-        range(i, -2, 2) range(j, -2, 2)
-        {
+        for (int i = -2; i <= 2; i++)
+        for (int j = -2; j <= 2; j++) {
             vec2 tpos = position + vec2(i,j);
             vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
@@ -236,8 +234,9 @@ void main()
             //Compute the SPH force
             vec2 F = vec2(0.);
             vec3 avgV = vec3(0.);
-            range(i, -2, 2) range(j, -2, 2)
-            {
+
+            for (int i = -2; i <= 2; i++)
+            for (int j = -2; j <= 2; j++) {
                 vec2 tpos = position + vec2(i,j);
                 vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
                 vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
@@ -257,8 +256,7 @@ void main()
             float dang = sense_ang*PI/float(sense_num);
             vec2 slimeF = vec2(0.);
             //slime mold sensors
-            range(i, -sense_num, sense_num)
-            {
+            for (int i = -sense_num; i <= sense_num; i++) {
                 float cang = ang + float(i) * dang;
             	vec2 dir = (1. + sense_dis*pow(M, distance_scale))*Dir(cang);
                 vec2 sensedPosition = mod(X + dir, RENDERSIZE);
@@ -307,8 +305,8 @@ void main()
         vec2 vel = vec2(0., 0.);
 
         //compute the smoothed density and velocity
-        range(i, -2, 2) range(j, -2, 2)
-        {
+        for (int i = -2; i <= 2; i++)
+        for (int j = -2; j <= 2; j++) {
             vec2 tpos = position + vec2(i,j);
             vec2 wrapped_tpos = mod(tpos, RENDERSIZE);
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_tpos);
