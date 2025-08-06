@@ -158,10 +158,6 @@
 #define POST_UNPACK(X) (clamp(X, 0., 1.) * 2. - 1.)
 #define PRE_PACK(X) clamp(0.5 * X + 0.5, 0., 1.)
 
-#define iFrame FRAMEINDEX
-#define U gl_FragColor
-#define fragColor gl_FragColor
-#define col gl_FragColor
 
 void main()
 {
@@ -213,7 +209,7 @@ void main()
         }
 
         //initial condition
-        if (iFrame < 1 || restart) {
+        if (FRAMEINDEX < 1 || restart) {
             X = position;
             V = vec2(0.);
             M = 0.07*GS(-position/RENDERSIZE);
@@ -221,9 +217,9 @@ void main()
 
         if (PASSINDEX == 0) {
             X = clamp(X - position, vec2(-0.5), vec2(0.5));
-            U = vec4(PRE_PACK(X), M, 1.);
+            gl_FragColor = vec4(PRE_PACK(X), M, 1.);
         } else {
-            U = vec4(PRE_PACK(V), 0., 1.);
+            gl_FragColor = vec4(PRE_PACK(V), 0., 1.);
         }
     }
     else if (PASSINDEX == 2) // ShaderToy Buffer B
@@ -304,7 +300,7 @@ void main()
          //   M = mix(M, 0.5, GS((position - RENDERSIZE*0.5)/13.));
 
         //save
-        U = vec4(PRE_PACK(V), 0., 1.);
+        gl_FragColor = vec4(PRE_PACK(V), 0., 1.);
     }
     else if (PASSINDEX == 3) // ShaderToy Buffer C
     {
@@ -331,7 +327,7 @@ void main()
 
         vel /= rho;
 
-        fragColor = vec4(vel, rho, 1.0);
+        gl_FragColor = vec4(vel, rho, 1.0);
     }
     else // ShaderToy Image
     {
@@ -369,21 +365,21 @@ void main()
                 colB += 3.*pow(max(dot(rd, normalize(vec3(-1,-0.5,0.8))), 0.), 10.);
                 float b = clamp(0.5 + 0.5*dot(n, normalize(vec3(1,1,1))), 0.,1.);
                 float K = 1. - pow(max(dot(n,rd),0.), 4.);
-                col.xyz = 1.*albedo*colB + 0.3*colA*K;
+                gl_FragColor.rgb = 1.*albedo*colB + 0.3*colA*K;
             }
             else
             {
                 //background
-                col = 1.*texture(iChannel2,  ray.yzx);
+                gl_FragColor = 1.*texture(iChannel2,  ray.yzx);
             }
-            col = tanh(1.3*col*col);
+            gl_FragColor = tanh(1.3*gl_FragColor*gl_FragColor);
         #else
             vec2 wrapped_pos = mod(position, RENDERSIZE);
         	float r = IMG_NORM_PIXEL(bufferC, wrapped_pos / RENDERSIZE).z;
 
-        	col.xyz =  3.*sin(0.2*vec3(1,2,3)*r);
+        	gl_FragColor.rgb = 3.*sin(0.2*vec3(1,2,3)*r);
         #endif
 
-        col.a = 1.;
+        gl_FragColor.a = 1.;
     }
 }
