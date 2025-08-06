@@ -224,7 +224,6 @@ void main()
     }
     else if (PASSINDEX == 2) // ShaderToy Buffer B
     {
-        vec2 uv = position/RENDERSIZE;
         vec2 wrapped_pos = mod(position, RENDERSIZE);
 
         vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrapped_pos);
@@ -335,7 +334,6 @@ void main()
             // Normalized pixel coordinates
             position = (position - RENDERSIZE*0.5)/max(RENDERSIZE.x,RENDERSIZE.y);
 
-            vec2 uv = iMouse.xy/RENDERSIZE;
             vec2 angles = vec2(0.5, -0.5)*PI;
 
             vec3 camera_z = vec3(cos(angles.x)*cos(angles.y),sin(angles.x)*cos(angles.y),sin(angles.y));
