@@ -162,6 +162,8 @@
 }
 */
 
+#define INV_SQRT_2 0.7071067811865475244008443621048
+
 // Constants and functions from LYGIA <https://github.com/patriciogonzalezvivo/lygia>
 #define PI 3.1415926535897932384626433832795
 #define HALF_PI 1.5707963267948966192313216916398
@@ -169,8 +171,6 @@
 float luminance(in vec3 linear) { return dot(linear, vec3(0.21250175, 0.71537574, 0.07212251)); }
 float luminance(in vec4 linear) { return luminance( linear.rgb ); }
 
-// Extra constant (not from LYGIA)
-#define INV_SQRT_2 0.7071067811865475244008443621048
 
 //
 // ShaderToy Common
