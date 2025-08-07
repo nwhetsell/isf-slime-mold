@@ -168,18 +168,11 @@
 #define PI 3.1415926535897932384626433832795
 #define HALF_PI 1.5707963267948966192313216916398
 
+float gaussian( vec2 d, float s) { return exp(-( d.x*d.x + d.y*d.y) / (2.0 * s*s)); }
+
 float luminance(in vec3 linear) { return dot(linear, vec3(0.21250175, 0.71537574, 0.07212251)); }
 float luminance(in vec4 linear) { return luminance( linear.rgb ); }
 
-
-//
-// ShaderToy Common
-//
-
-// Mold stuff
-#define HALF_SENSOR_COUNT_MINUS_1 6
-
-// Useful functions (from LYGIA <https://github.com/patriciogonzalezvivo/lygia>)
 vec2 polar2cart(in vec2 polar) {
     return vec2(cos(polar.x), sin(polar.x)) * polar.y;
 }
@@ -190,7 +183,14 @@ mat2 rotate2d(const in float r) {
     return mat2(c, s, -s, c);
 }
 
-float gaussian( vec2 d, float s) { return exp(-( d.x*d.x + d.y*d.y) / (2.0 * s*s)); }
+
+//
+// ShaderToy Common
+//
+
+#define HALF_SENSOR_COUNT_MINUS_1 6
+
+// Useful functions (from LYGIA <https://github.com/patriciogonzalezvivo/lygia>)
 
 // The ShaderToy shader uses the functions `floatBitsToUint` and
 // `uintBitsToFloat` to pack more than 4 floats (5 in this case) into a
