@@ -190,8 +190,6 @@ mat2 rotate2d(const in float r) {
 
 #define HALF_SENSOR_COUNT_MINUS_1 6
 
-// Useful functions (from LYGIA <https://github.com/patriciogonzalezvivo/lygia>)
-
 // The ShaderToy shader uses the functions `floatBitsToUint` and
 // `uintBitsToFloat` to pack more than 4 floats (5 in this case) into a
 // 4-component pixel. These functions are available in GLSL v3.30 (OpenGL v3.3)
