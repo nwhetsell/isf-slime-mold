@@ -159,8 +159,7 @@
 
         }
     ]
-}
-*/
+}*/
 
 #define INV_SQRT_2 0.7071067811865475244008443621048
 
@@ -221,8 +220,8 @@ void main()
             vec4 data = IMG_PIXEL(bufferA_positionAndMass, wrappedPosition);
 
             vec2 X0 = POST_UNPACK(data.xy) + translatedPosition;
-        	vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferB, wrappedPosition).xy);
-        	float M0 = data.z;
+            vec2 V0 = POST_UNPACK(IMG_PIXEL(bufferB, wrappedPosition).xy);
+            float M0 = data.z;
 
             X0 += V0 * dt; // Integrate position
 
@@ -315,10 +314,10 @@ void main()
             // Slime mold sensors
             for (int i = -HALF_SENSOR_COUNT_MINUS_1; i <= HALF_SENSOR_COUNT_MINUS_1; i++) {
                 float cang = ang + float(i) * dang;
-            	vec2 dir = polar2cart(vec2(cang, 1. + sense_dis * pow(M, distance_scale)));
+                vec2 dir = polar2cart(vec2(cang, 1. + sense_dis * pow(M, distance_scale)));
                 vec2 sensedPosition = mod(X + dir, RENDERSIZE);
-            	vec4 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE);
-            	slimeF += rotate2d(oscil_scale * (s0.z - M)) * s0.xy * sense_oscil +
+                vec4 s0 = IMG_NORM_PIXEL(bufferC, sensedPosition / RENDERSIZE);
+                slimeF += rotate2d(oscil_scale * (s0.z - M)) * s0.xy * sense_oscil +
                           polar2cart(vec2(ang + sign(float(i)) * HALF_PI, sense_force * pow(s0.z, force_scale)));
             }
 
@@ -375,8 +374,8 @@ void main()
     else // ShaderToy Image
     {
         vec2 wrappedPosition = mod(position, RENDERSIZE);
-       	float rho = IMG_NORM_PIXEL(bufferC, wrappedPosition / RENDERSIZE).z;
+        float rho = IMG_NORM_PIXEL(bufferC, wrappedPosition / RENDERSIZE).z;
 
-       	gl_FragColor = vec4(3. * sin(rho * 0.2 * vec3(1, 2, 3)), 1);
+        gl_FragColor = vec4(3. * sin(rho * 0.2 * vec3(1, 2, 3)), 1);
     }
 }
