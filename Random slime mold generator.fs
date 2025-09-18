@@ -80,7 +80,7 @@
             "NAME": "distance_scale",
             "LABEL": "Sensor distance scale",
             "TYPE": "float",
-            "DEFAULT": 2,
+            "DEFAULT": 0.5,
             "MAX": 1,
             "MIN": 0
         },
